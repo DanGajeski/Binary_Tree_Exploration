@@ -133,6 +133,10 @@ class TreeUI:
         self.draw_options.NODE_SIZE += 10
         self.draw(app)
 
+    def decrease_node_size(self, app):
+        self.draw_options.NODE_SIZE -= 10
+        self.draw(app)
+
     def add_node(self, app):
         self.tree.insert(TreeNode(random.randint(1, 100)))
         # self.tree.insert(TreeNode(self.next_value))
@@ -154,4 +158,9 @@ class TreeUI:
 
 
 tree_ui = TreeUI()
-tk_base_two.TkBaseApp({"Add Node": tree_ui.add_node, "Increase the fuckin' node size": tree_ui.increase_node_size, "Toggle Bounds": tree_ui.toggle_bounds, "Reset": tree_ui.reset}).run()
+tk_base_two.TkBaseApp({\
+    "Add Node": tree_ui.add_node, \
+    "Increase the fuckin' node size": tree_ui.increase_node_size, \
+    "Decrease the fuckin' node size": tree_ui.decrease_node_size, \
+    "Toggle Bounds": tree_ui.toggle_bounds, "Reset": tree_ui.reset\
+    }).run()
