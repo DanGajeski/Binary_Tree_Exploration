@@ -13,7 +13,7 @@ class DrawOptions:
 
 class TreeNode:
 
-    NODE_SIZE = 30
+    #NODE_SIZE = 30
     H_PAD = 5
     V_PAD = 5
 
