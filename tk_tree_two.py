@@ -9,6 +9,7 @@ import tk_base_two
 class DrawOptions:
     subtree_bounds: bool = False
     NODE_SIZE: int = 30
+    #inverted: bool = False
 
 
 class TreeNode:
@@ -33,7 +34,7 @@ class TreeNode:
         self._draw(canvas, opts)
 
     def calculate_child_positions(self, opts: DrawOptions):
-        left_offset = self.left.width + self.H_PAD if self.left else 0
+        left_offset = self.left.width + self.H_PAD if self.left else opts.NODE_SIZE
         if self.left:
             self.left.x = self.x
             self.left.y = self.y + opts.NODE_SIZE + self.V_PAD
@@ -104,6 +105,20 @@ class TreeNode:
             else:
                 self.right = node
 
+    def invert(self):
+        def lefty_loosy_righty_tighty():
+            self.left, self.right = self.right, self.left
+        if self.left and self.right:
+            lefty_loosy_righty_tighty()
+            self.left.invert()
+            self.right.invert()
+        elif self.left:
+            lefty_loosy_righty_tighty()
+            self.right.invert()
+        elif self.right:
+            lefty_loosy_righty_tighty()
+            self.left.invert()
+
     def tree_height(self):
         return max(
             self.left.tree_height() if self.left else 0,
@@ -143,6 +158,10 @@ class TreeUI:
         self.next_value += 1
         self.draw(app)
 
+    def invert_nodes(self, app):
+        self.tree.invert()
+        self.draw(app)
+
     def draw(self, app):
         # tree = TreeNode(
         #     10,
@@ -158,9 +177,11 @@ class TreeUI:
 
 
 tree_ui = TreeUI()
-tk_base_two.TkBaseApp({\
-    "Add Node": tree_ui.add_node, \
-    "Increase the fuckin' node size": tree_ui.increase_node_size, \
-    "Decrease the fuckin' node size": tree_ui.decrease_node_size, \
-    "Toggle Bounds": tree_ui.toggle_bounds, "Reset": tree_ui.reset\
+tk_base_two.TkBaseApp({ 
+    "Add Node": tree_ui.add_node, 
+    "Increase the fuckin' node size": tree_ui.increase_node_size, 
+    "Decrease the fuckin' node size": tree_ui.decrease_node_size, 
+    "Toggle Bounds": tree_ui.toggle_bounds, 
+    "Reset": tree_ui.reset,
+    "Invert Tree": tree_ui.invert_nodes,
     }).run()
