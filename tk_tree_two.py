@@ -9,12 +9,36 @@ import tk_base_two
 class DrawOptions:
     subtree_bounds: bool = False
     NODE_SIZE: int = 30
-    #inverted: bool = False
+    line_color: str = "#FFF"
+    oval_color: str = "#FFF"
+    text_color: str = "#FFF"
+    color_opts = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
 
+    def rand_oval_color(self):
+        self.oval_color =  '#' + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)]
+
+    def rand_line_color(self):
+        self.line_color =  '#' + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)]
+
+    def rand_text_color(self):
+        self.text_color =  '#' + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)] + \
+               self.color_opts[random.randint(0,15)] + self.color_opts[random.randint(0,15)]
+
+    def rand_all_color(self):
+        self.rand_oval_color()
+        self.rand_line_color()
+        self.rand_text_color()
 
 class TreeNode:
 
-    #NODE_SIZE = 30
     H_PAD = 5
     V_PAD = 5
 
@@ -71,24 +95,24 @@ class TreeNode:
     def _draw(self, canvas, opts: DrawOptions):
         half_width = self.width / 2
         half_size = opts.NODE_SIZE / 2
-        canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.NODE_SIZE, outline="#FF0")
-        canvas.create_text(self.x + half_width, self.y + half_size, text=str(self.value), font=('times new roman', 15), fill='#fff')
+        canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.NODE_SIZE, outline=opts.oval_color)
+        canvas.create_text(self.x + half_width, self.y + half_size, text=str(self.value), font=('times new roman', 15), fill=opts.text_color)
         #canvas.create_rectangle(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, fill='#00F')
-        canvas.create_oval(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, outline='#F00')
-        canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline='#F00')
-        canvas.create_line(self.x + half_width - half_size - 25, self.y + 20, self.x + half_width - 25, self.y + 31, fill='#F00')
-        canvas.create_line(self.x + half_width - half_size + 5, self.y + 20, self.x + half_width - 25, self.y + 31, fill='#F00')
+        canvas.create_oval(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, outline=opts.oval_color)
+        canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline=opts.oval_color)
+        canvas.create_line(self.x + half_width - half_size - 25, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.line_color)
+        canvas.create_line(self.x + half_width - half_size + 5, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.line_color)
         if self.count > 1:
-            canvas.create_text(self.x + half_width, self.y + half_size + 10, text=str(self.count), font=('serif', 8), fill='#fff')
+            canvas.create_text(self.x + half_width, self.y + half_size + 10, text=str(self.count), font=('serif', 8), fill=opts.text_color)
         if opts.subtree_bounds:
             outline_colors = ['#F00', '#F80', '#FF0', '#0F0', '#0F8', '#0FF', '#08F', '#00F']
             outline_color = outline_colors[(self.tree_height() - 1) % len(outline_colors)]
             canvas.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height, outline=outline_color)
         if self.left:
-            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.left.x + self.left.width / 2, self.left.y, fill='#fff')
+            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.left.x + self.left.width / 2, self.left.y, fill=opts.line_color)
             self.left._draw(canvas, opts)
         if self.right:
-            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.right.x + self.right.width / 2, self.right.y, fill='#fff')
+            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.right.x + self.right.width / 2, self.right.y, fill=opts.line_color)
             self.right._draw(canvas, opts)
 
     def insert(self, node):
@@ -118,6 +142,16 @@ class TreeNode:
         elif self.right:
             lefty_loosy_righty_tighty()
             self.left.invert()
+
+    
+    #def rand_line_color(self, opts: DrawOptions):
+
+    #def rand_text_color(self, opts: DrawOptions):
+
+    #def rand_all_color(self, opts: DrawOptions):
+    #   rand_oval_color()
+    #   rand_line_color()
+    #   rand_text_color()
 
     def tree_height(self):
         return max(
@@ -162,6 +196,22 @@ class TreeUI:
         self.tree.invert()
         self.draw(app)
 
+    def randomize_oval_color(self, app):
+        self.draw_options.rand_oval_color()
+        self.draw(app)
+
+    def randomize_line_color(self, app):
+        self.draw_options.rand_line_color()
+        self.draw(app)
+
+    def randomize_text_color(self, app):
+        self.draw_options.rand_text_color()
+        self.draw(app)
+
+    def randomize_all_color(self, app):
+        self.draw_options.rand_all_color()
+        self.draw(app)
+
     def draw(self, app):
         # tree = TreeNode(
         #     10,
@@ -184,4 +234,8 @@ tk_base_two.TkBaseApp({
     "Toggle Bounds": tree_ui.toggle_bounds, 
     "Reset": tree_ui.reset,
     "Invert Tree": tree_ui.invert_nodes,
+    "R Oval Color": tree_ui.randomize_oval_color,
+    "R Line Color": tree_ui.randomize_line_color,
+    "R Text Color": tree_ui.randomize_text_color,
+    "R All Color": tree_ui.randomize_all_color,
     }).run()
