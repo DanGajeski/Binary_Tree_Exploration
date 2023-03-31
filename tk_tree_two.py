@@ -1,5 +1,6 @@
 import random
 import tkinter as tk
+from tkinter import ttk
 from dataclasses import dataclass
 
 import tk_base_two
@@ -8,7 +9,7 @@ import tk_base_two
 @dataclass
 class DrawOptions:
     subtree_bounds: bool = False
-    NODE_SIZE: int = 30
+    node_size: int = 30
     line_color: str = "#FFF"
     oval_color: str = "#FFF"
     text_color: str = "#FFF"
@@ -37,6 +38,14 @@ class DrawOptions:
         self.rand_line_color()
         self.rand_text_color()
 
+    def inc_node_size(self):
+        self.node_size += 10
+
+    def dec_node_size(self):
+        self.node_size -= 10
+
+    #replace node_size method IN HERE
+
 class TreeNode:
 
     H_PAD = 5
@@ -51,6 +60,43 @@ class TreeNode:
         self.count = 1
         self.left = left
         self.right = right
+        self.num_test = 1
+
+        ###########
+
+    #sick
+    def contains(self, num, guess_entry_label_two):
+        subtree = None
+        already_true = None
+        if num == str(self.value):
+            already_true = True
+            guess_entry_label_two.config(text="True!")
+            guess_entry_label_two.pack()
+        elif num < str(self.value):
+            subtree = self.left
+        else:
+            subtree = self.right
+        if already_true:
+            pass
+        elif subtree:
+            subtree.contains(num, guess_entry_label_two)
+        else:
+            guess_entry_label_two.config(text="Fuckin' False!")
+            guess_entry_label_two.pack()
+    # def update_verify_label(self):
+    #     verified = False
+    #     verify_num = int(self.guess_input.get())
+    #     if verify_num in self.tree.values: 
+    #         verified = True
+    #     if self.verify_label == None:
+    #         self.verify_label = ttk.Label(main_window, text=verified)
+    #         self.verify_label.pack()
+    #     else:
+    #         self.verify_label.text = verified
+    #         self.verify_label.pack()
+
+    # def verify_num(self, num):
+    #     return num in self.values
 
     def draw(self, canvas, opts: DrawOptions):
         self.calculate_size(opts)
@@ -58,20 +104,20 @@ class TreeNode:
         self._draw(canvas, opts)
 
     def calculate_child_positions(self, opts: DrawOptions):
-        left_offset = self.left.width + self.H_PAD if self.left else opts.NODE_SIZE
+        left_offset = self.left.width + self.H_PAD if self.left else opts.node_size
         if self.left:
             self.left.x = self.x
-            self.left.y = self.y + opts.NODE_SIZE + self.V_PAD
+            self.left.y = self.y + opts.node_size + self.V_PAD
             self.left.calculate_child_positions(opts)
         if self.right:
             self.right.x = self.x + left_offset + self.H_PAD/2
-            self.right.y = self.y + opts.NODE_SIZE + self.V_PAD
+            self.right.y = self.y + opts.node_size + self.V_PAD
             self.right.calculate_child_positions(opts)
 
     def calculate_size(self, opts: DrawOptions):
         if not self.left and not self.right:
-            self.width = opts.NODE_SIZE
-            self.height = opts.NODE_SIZE
+            self.width = opts.node_size
+            self.height = opts.node_size
         else:
             max_width = 0
             max_height = 0
@@ -87,15 +133,15 @@ class TreeNode:
             # self.width = max_width * 2 + self.H_PAD
             # minimal size -- kinda broken
             self.width = \
-                (self.left.width if self.left else opts.NODE_SIZE) \
-                + (self.right.width if self.right else opts.NODE_SIZE) \
+                (self.left.width if self.left else opts.node_size) \
+                + (self.right.width if self.right else opts.node_size) \
                 + (self.H_PAD if self.left or self.right else 0)
-            self.height = opts.NODE_SIZE + max_height + self.V_PAD
+            self.height = opts.node_size + max_height + self.V_PAD
 
     def _draw(self, canvas, opts: DrawOptions):
         half_width = self.width / 2
-        half_size = opts.NODE_SIZE / 2
-        canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.NODE_SIZE, outline=opts.oval_color)
+        half_size = opts.node_size / 2
+        canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.node_size, outline=opts.oval_color)
         canvas.create_text(self.x + half_width, self.y + half_size, text=str(self.value), font=('times new roman', 15), fill=opts.text_color)
         #canvas.create_rectangle(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, fill='#00F')
         canvas.create_oval(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, outline=opts.oval_color)
@@ -109,10 +155,10 @@ class TreeNode:
             outline_color = outline_colors[(self.tree_height() - 1) % len(outline_colors)]
             canvas.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height, outline=outline_color)
         if self.left:
-            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.left.x + self.left.width / 2, self.left.y, fill=opts.line_color)
+            canvas.create_line(self.x + half_width, self.y + opts.node_size, self.left.x + self.left.width / 2, self.left.y, fill=opts.line_color)
             self.left._draw(canvas, opts)
         if self.right:
-            canvas.create_line(self.x + half_width, self.y + opts.NODE_SIZE, self.right.x + self.right.width / 2, self.right.y, fill=opts.line_color)
+            canvas.create_line(self.x + half_width, self.y + opts.node_size, self.right.x + self.right.width / 2, self.right.y, fill=opts.line_color)
             self.right._draw(canvas, opts)
 
     def insert(self, node):
@@ -129,6 +175,8 @@ class TreeNode:
             else:
                 self.right = node
 
+    
+
     def invert(self):
         def lefty_loosy_righty_tighty():
             self.left, self.right = self.right, self.left
@@ -143,26 +191,20 @@ class TreeNode:
             lefty_loosy_righty_tighty()
             self.left.invert()
 
-    
-    #def rand_line_color(self, opts: DrawOptions):
-
-    #def rand_text_color(self, opts: DrawOptions):
-
-    #def rand_all_color(self, opts: DrawOptions):
-    #   rand_oval_color()
-    #   rand_line_color()
-    #   rand_text_color()
-
     def tree_height(self):
         return max(
             self.left.tree_height() if self.left else 0,
             self.right.tree_height() if self.right else 0,
         ) + 1
 
+    #def num_in_tree(self):
+
 
 class TreeUI:
     def __init__(self):
         self.draw_options = DrawOptions(subtree_bounds=False)
+        self.guess_input = None
+        #self.guess_input_answer = tk.StringVar(text="Your fuckin' answer here:")
         self.reset()
 
     def reset(self, app=None):
@@ -170,7 +212,7 @@ class TreeUI:
         self.tree.x = 5
         self.tree.y = 5
         self.next_value = 1
-        self.draw_options.NODE_SIZE = 30
+        self.draw_options.node_size = 30
         if app:
             self.draw(app)
 
@@ -179,11 +221,10 @@ class TreeUI:
         self.draw(app)
 
     def increase_node_size(self, app):
-        self.draw_options.NODE_SIZE += 10
+        self.draw_options.inc_node_size()
         self.draw(app)
-
     def decrease_node_size(self, app):
-        self.draw_options.NODE_SIZE -= 10
+        self.draw_options.dec_node_size()
         self.draw(app)
 
     def add_node(self, app):
@@ -223,7 +264,27 @@ class TreeUI:
         app.canvas.delete("all")
         self.tree.draw(app.canvas, self.draw_options)
 
-        app.canvas.create_text(5, 800, anchor=tk.SW, fill="#FFF", text="Height: " + str(self.tree.tree_height()))
+        app.canvas.create_text(5, 900, anchor=tk.SW, fill="#FFF", text="Height: " + str(self.tree.tree_height()))
+
+
+    def init_ui(self, container_frame):
+        guess_entry_frame = ttk.Frame(container_frame)
+        guess_entry_frame.pack()
+
+        self.guess_input = tk.StringVar()
+         
+        guess_entry_label = ttk.Label(guess_entry_frame, text="Is # in tree? ...> ")
+        guess_entry_label.pack()
+
+        guess_entry = ttk.Entry(guess_entry_frame, textvariable=self.guess_input, font=('times new roman', 15))
+        guess_entry.pack(expand=True)
+
+        guess_entry_label_two = ttk.Label(guess_entry_frame, text="Your Fuckin' Answer Here: ")
+
+        guess_entry_button = ttk.Button(guess_entry_frame, text="Check Guess", command=lambda: self.tree.contains(self.guess_input.get(), guess_entry_label_two)) #command=update_verify_label)
+        guess_entry_button.pack(pady=10)
+        
+        guess_entry_label_two.pack()
 
 
 tree_ui = TreeUI()
@@ -238,4 +299,6 @@ tk_base_two.TkBaseApp({
     "R Line Color": tree_ui.randomize_line_color,
     "R Text Color": tree_ui.randomize_text_color,
     "R All Color": tree_ui.randomize_all_color,
-    }).run()
+    }, 
+    tree_ui.init_ui
+    ).run()
