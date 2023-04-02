@@ -83,6 +83,33 @@ class TreeNode:
         else:
             guess_entry_label_two.config(text="Fuckin' False!")
             guess_entry_label_two.pack()
+
+    def rotate_left(self):
+        old_root = self
+        old_right_left = self.right.left 
+
+        root = self.right # B = A
+
+        root.left = old_root 
+
+        root.left.right = old_right_left 
+
+        return root  
+
+    def rotate_right(self):
+        old_root = self 
+        old_left_right = self.left.right 
+
+        root = self.left # A = B
+
+        root.right = old_root
+
+        root.right.left = old_left_right
+
+        return root 
+
+
+    
     # def update_verify_label(self):
     #     verified = False
     #     verify_num = int(self.guess_input.get())
@@ -197,6 +224,16 @@ class TreeNode:
             self.right.tree_height() if self.right else 0,
         ) + 1
 
+    def clone(self):
+        new_left = self.left.clone() if self.left else None
+        new_right = self.right.clone() if self.right else None
+        new_self = TreeNode(self.value, new_left, new_right)
+        new_self.count = self.count 
+
+        return new_self
+
+
+
     #def num_in_tree(self):
 
 
@@ -208,7 +245,11 @@ class TreeUI:
         self.reset()
 
     def reset(self, app=None):
-        self.tree = TreeNode(50)
+        #self.tree = TreeNode(50)
+        self.tree = TreeNode(10, # B
+                TreeNode(5, TreeNode(1), TreeNode(7)), # A + children
+                TreeNode(15, TreeNode(12), TreeNode(20))) # B.right
+        self.prev_tree = None
         self.tree.x = 5
         self.tree.y = 5
         self.next_value = 1
@@ -260,12 +301,30 @@ class TreeUI:
         #     TreeNode(12, None, TreeNode(20, TreeNode(15), TreeNode(21))))
         # tree.x = 5
         # tree.y = 5
+        
+
 
         app.canvas.delete("all")
+
+        if self.prev_tree:
+            self.prev_tree.draw(app.canvas, self.draw_options)
+            self.tree.x = self.prev_tree.width + 25
+            self.tree.y = 0
+        
+
         self.tree.draw(app.canvas, self.draw_options)
 
         app.canvas.create_text(5, 900, anchor=tk.SW, fill="#FFF", text="Height: " + str(self.tree.tree_height()))
 
+    def rotate_right(self, app):
+        self.prev_tree = self.tree.clone()
+        self.tree = self.tree.rotate_right()
+        self.draw(app)
+
+    def rotate_left(self, app):
+        self.prev_tree = self.tree.clone()
+        self.tree = self.tree.rotate_left()
+        self.draw(app)
 
     def init_ui(self, container_frame):
         guess_entry_frame = ttk.Frame(container_frame)
@@ -295,6 +354,8 @@ tk_base_two.TkBaseApp({
     "Toggle Bounds": tree_ui.toggle_bounds, 
     "Reset": tree_ui.reset,
     "Invert Tree": tree_ui.invert_nodes,
+    "Rotate Left": tree_ui.rotate_left,
+    "Rotate Right": tree_ui.rotate_right,
     "R Oval Color": tree_ui.randomize_oval_color,
     "R Line Color": tree_ui.randomize_line_color,
     "R Text Color": tree_ui.randomize_text_color,
