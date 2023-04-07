@@ -13,7 +13,22 @@ class DrawOptions:
     line_color: str = "#FFF"
     oval_color: str = "#FFF"
     text_color: str = "#FFF"
+    pearl_line_color: str = None
+    pearl_oval_color: str = None
+    pearl_enabled: bool = False
     color_opts = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
+
+    def toggle_pearl_faces(self):
+        if self.pearl_enabled:
+            self.pearl_enabled = False   
+        else:
+            self.pearl_enabled = True
+        if self.pearl_enabled:
+            self.pearl_line_color: str = "#00F"
+            self.pearl_oval_color: str = "#0F0"
+        else:
+            self.pearl_line_color: str = None
+            self.pearl_oval_color: str = None
 
     def rand_oval_color(self):
         self.oval_color =  '#' + \
@@ -54,6 +69,8 @@ class TreeNode:
     def __init__(self, value, left=None, right=None):
         self.x = 0
         self.y = 0
+        self.init_half_width = 15 / 2
+        self.init_half_size = 15
         self.width = 0
         self.height = 0
         self.value = value
@@ -165,16 +182,18 @@ class TreeNode:
                 + (self.H_PAD if self.left or self.right else 0)
             self.height = opts.node_size + max_height + self.V_PAD
 
+
+            #switch pearl to conditional instead of draw none vs something if opts.etc......
     def _draw(self, canvas, opts: DrawOptions):
         half_width = self.width / 2
         half_size = opts.node_size / 2
+        canvas.create_oval(self.x + self.init_half_width - self.init_half_size - 10, self.y, self.x + self.init_half_width - 10, self.y + 11, outline=opts.pearl_oval_color)
+        #canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline=opts.pearl_oval_color)
+        canvas.create_line(self.x + half_width - half_size - 25, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.pearl_line_color)
+        canvas.create_line(self.x + half_width - half_size + 5, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.pearl_line_color)
         canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.node_size, outline=opts.oval_color)
         canvas.create_text(self.x + half_width, self.y + half_size, text=str(self.value), font=('times new roman', 15), fill=opts.text_color)
         #canvas.create_rectangle(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, fill='#00F')
-        canvas.create_oval(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, outline=opts.oval_color)
-        canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline=opts.oval_color)
-        canvas.create_line(self.x + half_width - half_size - 25, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.line_color)
-        canvas.create_line(self.x + half_width - half_size + 5, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.line_color)
         if self.count > 1:
             canvas.create_text(self.x + half_width, self.y + half_size + 10, text=str(self.count), font=('serif', 8), fill=opts.text_color)
         if opts.subtree_bounds:
@@ -257,6 +276,12 @@ class TreeUI:
         if app:
             self.draw(app)
 
+    def toggle_pearl_faces(self, app):
+        self.draw_options.toggle_pearl_faces()
+        self.draw(app)
+
+
+        #switch toggle_pearl_faces to thiss.......
     def toggle_bounds(self, app):
         self.draw_options.subtree_bounds = not self.draw_options.subtree_bounds
         self.draw(app)
@@ -348,18 +373,24 @@ class TreeUI:
 
 tree_ui = TreeUI()
 tk_base_two.TkBaseApp({ 
-    "Add Node": tree_ui.add_node, 
-    "Increase the fuckin' node size": tree_ui.increase_node_size, 
-    "Decrease the fuckin' node size": tree_ui.decrease_node_size, 
-    "Toggle Bounds": tree_ui.toggle_bounds, 
-    "Reset": tree_ui.reset,
-    "Invert Tree": tree_ui.invert_nodes,
-    "Rotate Left": tree_ui.rotate_left,
-    "Rotate Right": tree_ui.rotate_right,
-    "R Oval Color": tree_ui.randomize_oval_color,
-    "R Line Color": tree_ui.randomize_line_color,
-    "R Text Color": tree_ui.randomize_text_color,
-    "R All Color": tree_ui.randomize_all_color,
+    "Add Node": ("<Control-a>", tree_ui.add_node), 
+    "Increase the fuckin' node size": ("<Control-.>", tree_ui.increase_node_size), 
+    "Decrease the fuckin' node size": ("<Control-,>", tree_ui.decrease_node_size), 
+    "Toggle Bounds": ("<Control-b>", tree_ui.toggle_bounds), 
+    "Reset": ("<Control-r>", tree_ui.reset),
+    "Invert Tree": ("<Control-i>", tree_ui.invert_nodes),
+    "Rotate Left": ("<Control-l>", tree_ui.rotate_left),
+    "Rotate Right": ("<Control-r>", tree_ui.rotate_right),
+    "R Oval Color": ("<Control-o>", tree_ui.randomize_oval_color),
+    "R Line Color": ("<Control-1>", tree_ui.randomize_line_color),
+    "R Text Color": ("<Control-t>", tree_ui.randomize_text_color),
+    "R All Color": ("<Control-`>", tree_ui.randomize_all_color),
+    "Toggle Pearl Faces": ("<Control-p>", tree_ui.toggle_pearl_faces),
     }, 
     tree_ui.init_ui
     ).run()
+
+
+
+# Adjust your mom
+# Create menu bar
