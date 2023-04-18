@@ -12,11 +12,14 @@ See examples at bottom.
 
 class TkBaseApp:
 
-    def __init__(self, funcs: dict, ui_init=None):
+    def __init__(self, funcs: dict, init_ui=None):
         self.funcs = funcs
         self.canvas = None
-        self.ui_init = ui_init
+        self.init_ui = init_ui
+            #self.init_ui == paint_ui.init_ui
         self.container_frame = None
+
+        self.my_buttons = {}
         #self.butt_func = butt_func
 
     def run(self):
@@ -26,7 +29,7 @@ class TkBaseApp:
         
         
         
-        main_window.title("FUCK")
+        main_window.title("FUCKyeah")
 
 
 
@@ -79,12 +82,16 @@ class TkBaseApp:
         for label, func in self.funcs.items():
             def wrap(fn):
                 return lambda: fn(self)
-            ttk.Button(button_container_frame, text=label, command=wrap(func[1])).pack(side=LEFT)
+            cur_button = ttk.Button(button_container_frame, text=label, command=wrap(func[1]))
+            cur_button.pack(side=LEFT)
+            self.my_buttons[label] = cur_button 
+
+
         self.canvas = Canvas(container_frame, bg="#000000", height=900, width=1200)
         #canvas.pack(fill=BOTH, expand=1)
         self.canvas.pack()
 
-        self.ui_init(container_frame)
+        self.init_ui(container_frame, self.canvas)
 
         # guess_input = StringVar()
         

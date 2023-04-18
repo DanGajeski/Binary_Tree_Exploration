@@ -187,10 +187,20 @@ class TreeNode:
     def _draw(self, canvas, opts: DrawOptions):
         half_width = self.width / 2
         half_size = opts.node_size / 2
-        canvas.create_oval(self.x + self.init_half_width - self.init_half_size - 10, self.y, self.x + self.init_half_width - 10, self.y + 11, outline=opts.pearl_oval_color)
-        #canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline=opts.pearl_oval_color)
+        #canvas.create_oval(self.x + self.init_half_width - self.init_half_size - 10, self.y, self.x + self.init_half_width - 10, self.y + 11, outline=opts.pearl_oval_color)
+
+        #canvas.create_oval(self.x + self.init_half_width - self.init_half_size - 10, self.y, self.x + self.init_half_width - 10, self.y + 11, outline=opts.pearl_oval_color)
+        
+        #left-eye
+        canvas.create_oval(self.x + half_width - half_size - 25, self.y, self.x + half_width - 25, self.y + 11, outline=opts.pearl_oval_color)
+        #right-eye
+        canvas.create_oval(self.x + half_width - 25, self.y, self.x + half_width, self.y + 11, outline=opts.pearl_oval_color)
+
+        #left-smile
         canvas.create_line(self.x + half_width - half_size - 25, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.pearl_line_color)
-        canvas.create_line(self.x + half_width - half_size + 5, self.y + 20, self.x + half_width - 25, self.y + 31, fill=opts.pearl_line_color)
+        #right-smile?
+        canvas.create_line(self.x + half_width - 25, self.y + 31, self.x + half_width, self.y + 20, fill=opts.pearl_line_color)
+        
         canvas.create_oval(self.x + half_width - half_size, self.y, self.x + half_width + half_size, self.y + opts.node_size, outline=opts.oval_color)
         canvas.create_text(self.x + half_width, self.y + half_size, text=str(self.value), font=('times new roman', 15), fill=opts.text_color)
         #canvas.create_rectangle(self.x + half_width - half_size - 10, self.y, self.x + half_width - 10, self.y + 11, fill='#00F')
